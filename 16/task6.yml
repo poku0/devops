@@ -1,0 +1,11 @@
+default: &default
+  name: Povilas
+  age: 24
+  grade: 10
+  subjects: 
+  - math
+  - history
+  - biology
+
+student:
+  <<: *default
