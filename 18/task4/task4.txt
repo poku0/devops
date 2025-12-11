@@ -1,0 +1,66 @@
+How to create a Virtual Private Network (VPN) in Azure CLI? 
+
+First, we will create VPN gateway.
+
+1. Create a resource group
+az group create --name ca-devops-01 --location polandcentral
+
+2. Create a virtual Network
+az network vnet create -n ca-devops-vnet-01 -g ca-devops-01 -l polandcentral --address-prefix 10.1.0.0/16 --subnet-name FrontEnd --subnet-prefix 10.1.0.0/24
+
+3. Add a gateway subnet
+az network vnet subnet create --vnet-name ca-devops-vnet-01 -n GatewaySubnet -g ca-devops-01 --address-prefix 10.1.255.0/27
+
+4. Request public IP address
+az network public-ip create --name ca-devops-vnet-01-IP1 --resource-group ca-devops-01 --allocation-method Static --sku Standard --version IPv4 --zone 1 2 3
+
+5. Create an active-active gateway (recommended), by requesting a second public IP address
+az network public-ip create --name ca-devops-vnet-01-IP2 --resource-group ca-devops-01 --allocation-method Static --sku Standard --version IPv4 --zone 1 2 3
+
+6. Create VPN gateway (active-active, using both public IP addresses)
+az network vnet-gateway create --name ca-devops-vnet-01-GW --public-ip-addresses ca-devops-vnet-01-IP1 ca-devops-vnet-01-IP2 --resource-group ca-devops-01 --vnet ca-devops-vnet-01 --gateway-type Vpn --vpn-type RouteBased --sku VpnGw2AZ --vpn-gateway-generation Generation2 --no-wait
+
+NOTE: Process will run in background due to --no-wait flag. It can take up to 45 minutes
+
+7. View VPN gateway
+az network vnet-gateway show -n ca-devops-vnet-01-GW -g ca-devops-01
+
+8. View gateway IP address
+az network public-ip show -g ca-devops-01 -n ca-devops-vnet-01-IP1
+az network public-ip show -g ca-devops-01 -n ca-devops-vnet-01-IP2
+
+9. Clean up resources by deleting resource group created previously
+az group delete --name ca-devops-01 --yes
+
+Next, configure Point-to-Site (P2S) VPN
+
+You will need a certificate, this guide will cover a self-signed certificate on macOS
+
+10. openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365
+PEM pass phrase: ca-devops
+Country Name: LT
+State: Vilnius
+Locality name: Vilnius
+Org. name: CA
+Org. Unit: CA
+Common Name: CA
+email: povilas110@gmail.com
+
+cert.pem and key.pem should appear in your working directory
+
+11. Print the self-signed root certificate public data into rootCert.pub
+openssl x509 -in Cert.pem -outform der | base64 -w0 > rootCert.pub
+
+12. Generate client certificate
+
+Generate private key
+openssl genrsa -out Key.pem 2048
+
+Generate CA cert
+openssl req -x509 -new -nodes -key Key.pem -sha256 -days 3650 -out Cert.pem -subj "/CN=AzureRootCA"
+
+Run ./generateClientCert.sh 
+
+verify
+
+openssl verify -CAfile Cert.pem Cert.pem "${hostname}Cert.pem" 
