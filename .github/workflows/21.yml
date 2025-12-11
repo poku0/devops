@@ -1,0 +1,24 @@
+name: AutoBuild 
+
+on:                  # events that trigger the workflow
+  push:              # push event
+    branches:        # branches to trigger the workflow
+      - main         # branches to trigger the workflow
+    paths:           # paths to the files that trigger the workflow
+      - 13/multi/**  # path to the directory with the Dockerfile 
+  workflow_dispatch: # allows to run workflow manually
+
+jobs:
+  build:             # job name
+    runs-on: ubuntu-latest
+    defaults:          # default values for the job
+      run: 
+        working-directory: 13/multi   
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/ca-devops-ua6:v0.20 .
+      - name: Login
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/ca-devops-ua6:v0.20
