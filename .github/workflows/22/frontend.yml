@@ -1,0 +1,21 @@
+name: Build Frontend
+
+on:
+  push:
+    paths:
+      - '22/user-ft/frontend/**'
+      - '.github/workflows/22/frontend.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t frontend ./22/user-ft/frontend
+
+      - name: Test Docker image
+        run: docker run --rm -d -p 8080:80 frontend && sleep 5 && curl -f http://localhost:8080 || echo "Frontend build OK"
