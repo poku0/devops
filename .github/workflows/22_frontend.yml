@@ -3,8 +3,8 @@ name: Build Frontend
 on:
   push:
     paths:
-      - '22/frontend/**'
-      - '.github/workflows/frontend.yml'
+      - '22/user-ft/frontend/**'
+      - '.github/workflows/22_frontend.yml'
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t frontend ./22/frontend
+        run: docker build -t frontend ./22/user-ft/frontend
 
       - name: Test Docker image
         run: docker run --rm -d -p 8080:80 frontend && sleep 5 && curl -f http://localhost:8080 || echo "Frontend build OK"
