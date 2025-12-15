@@ -3,8 +3,8 @@ name: Build Backend
 on:
   push:
     paths:
-      - '22/user-ft/backend/**'
-      - '.github/workflows/22_backend.yml'
+      - '22/backend/**'
+      - '.github/workflows/backend.yml'
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t backend ./22/user-ft/backend
+        run: docker build -t backend ./22/backend
 
       - name: Test Docker image
         run: docker run --rm backend node --version
