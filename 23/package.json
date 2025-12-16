@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "express": "^4.20.0"
+    },
+    "scripts": {
+        "start": "node app.js",
+        "build": "echo BUILDING..."
+    }
+}

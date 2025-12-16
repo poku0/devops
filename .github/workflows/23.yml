@@ -1,0 +1,27 @@
+name: Docker actions pipeline
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: /23
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/lecture-23:latest
+            ${{ secrets.DOCKER_USERNAME }}/lecture-23:${{ github.sha }}
