@@ -23,5 +23,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/lecture-23:latest
-            ${{ secrets.DOCKER_USERNAME }}/lecture-23:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/ca-devops-ua6:latest
+            ${{ secrets.DOCKER_USERNAME }}/ca-devops-ua6:${{ github.sha }}
