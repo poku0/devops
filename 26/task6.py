@@ -1,10 +1,13 @@
 sentence = input("Enter a sentence: ")
 
-for word in sentence:
-    for letter in word:
-        letter_count[letter] += 1
-        elseif:brew install git-filter-repo
+sentence = sentence.lower()
+letter_count = {}
+
+for letter in sentence:
+    if letter.isalpha():
+        if letter in letter_count:
+            letter_count[letter] += 1
+        else:
             letter_count[letter] = 1
 
 print(letter_count)
-
