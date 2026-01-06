@@ -1,0 +1,23 @@
+name: Build Backend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '22/backend/**'
+      - '.github/workflows/backend.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t backend ./22/backend
+
+      - name: Test Docker image
+        run: docker run --rm backend node --version
+
