@@ -1,2 +1,5 @@
-# devops
-This will contain information regarding CA DevOps
+# DevOps Course CodeAcademy
+
+```
+This repo will contain information regarding CA DevOps course
+```
