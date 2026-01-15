@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Goodbye {{ name }}{% endblock %}
+
+{% block content %}
+<h2>Goodbye, {{ name }}!</h2>
+<p>Say goodbye to:</p>
+<ul>
+    {% for n in names %}
+    <li>{{ n }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
+

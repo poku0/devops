@@ -1,5 +1,5 @@
 import Greeting
 
-print(Greeting.main())
+print(Greeting)
 
 # not working 
