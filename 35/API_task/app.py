@@ -103,6 +103,51 @@ def test_api():
             'error': str(e)
         }), 500
 
+## additional API endpoints 
+@app.route('/api/user/<int:user_id>')
+def get_user(user_id: int):
+    """Endpoint to get user by ID"""
+    try:
+        user_data = pet_api.get_user_by_id(user_id)
+        return jsonify({
+            'success': True,
+            'data': user_data
+        })
+    except requests.exceptions.HTTPError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'status_code': e.response.status_code
+        }), e.response.status_code
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/store/inventory')
+def get_inventory():
+    """Endpoint to get inventory"""
+    try:
+        inventory = pet_api.get_inventory()
+        return jsonify({
+            'success': True,
+            'data': inventory
+        })
+    except requests.exceptions.HTTPError as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'status_code': e.response.status_code
+        }), e.response.status_code
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
 
