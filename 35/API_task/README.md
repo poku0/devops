@@ -66,7 +66,28 @@ The application will be available at `http://localhost:5000`
   - Status values: `available`, `pending`, `sold`
   - Example: `http://localhost:5000/api/pets/status/available`
 
-- `GET /api/test` - Test API connectivity
+- `GET /api/test` - Test API connectivity (Protected)
+
+## Authentication
+
+The API uses JWT (JSON Web Tokens) for security.
+
+### 1. Register
+Create a new user account.
+- **URL**: `/api/register`
+- **Method**: `POST`
+- **Body**: `{"username": "your_user", "password": "your_password"}`
+
+### 2. Login
+Login to receive an access token.
+- **URL**: `/api/login`
+- **Method**: `POST`
+- **Body**: `{"username": "your_user", "password": "your_password"}`
+- **Response**: `{"access_token": "your_jwt_token", ...}`
+
+### 3. Authorized Requests
+To access protected routes (like `/api/test`), you must include the token in the `Authorization` header.
+- **Header**: `Authorization: Bearer <your_access_token>`
 
 ## Usage Examples
 
@@ -91,6 +112,29 @@ curl http://localhost:5000/api/pets/status/available
 **Test connection:**
 ```bash
 curl http://localhost:5000/api/test
+```
+
+### Authentication Examples
+
+**1. Register:**
+```bash
+curl -X POST http://localhost:5000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "myuser", "password": "mypassword"}'
+```
+
+**2. Login:**
+```bash
+curl -X POST http://localhost:5000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "myuser", "password": "mypassword"}'
+```
+*Copy the `access_token` from the response.*
+
+**3. Authorized Request:**
+```bash
+curl http://localhost:5000/api/test \
+  -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
 ```
 
 ### Using Python requests
