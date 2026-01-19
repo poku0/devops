@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime, timedelta, timezone
-import env # import secrets
+import env_vars as env # import secrets
 
 app = Flask(__name__)
 
