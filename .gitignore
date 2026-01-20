@@ -1,3 +1,5 @@
+zabbix
+mysql
 env_vars.py
 
 *.db

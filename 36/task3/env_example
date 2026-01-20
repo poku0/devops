@@ -1,0 +1,6 @@
+# ZABBIX_DATA_PATH=/opt/zabbix/data # for Linux
+ZABBIX_DATA_PATH=./zabbix/data # for macOS
+MYSQL_USER=zabbix
+MYSQL_PASSWORD=zabbix
+MYSQL_ROOT_PASSWORD=zabbix
+ZBX_STARTPINGERS=4
