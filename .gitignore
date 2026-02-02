@@ -1,3 +1,7 @@
+.terraform.lock.hcl
+
+exam_*.md
+
 zabbix
 mysql
 env_vars.py
