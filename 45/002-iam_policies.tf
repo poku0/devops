@@ -10,7 +10,7 @@ resource "aws_iam_policy" "cars_policy" {
     Statement = [
       {
         Action = [
-          "Write:PutItem",
+          "dynamodb:PutItem",
         ]
         Effect   = "Allow"
         Resource = aws_dynamodb_table.basic-dynamodb-table.arn
