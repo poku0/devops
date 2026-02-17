@@ -23,8 +23,6 @@ resource "aws_route_table" "private_rt" {
 
 resource "aws_route" "private_nat_access" {
   route_table_id = aws_route_table.private_rt.id
-  # Matching your CLI image destination: 10.2.0.0/24
-  # Note: Usually this is 0.0.0.0/0 for full internet access
   destination_cidr_block = "10.2.0.0/24"
   nat_gateway_id         = aws_nat_gateway.nat.id
 }

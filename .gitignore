@@ -1,3 +1,7 @@
+variables.tf
+
+*.plan
+.aws-sam/
 cat.png
 
 .terraform.lock.hcl
