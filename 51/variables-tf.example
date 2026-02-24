@@ -1,0 +1,5 @@
+variable "create" {
+    description = "True if we want to create it"
+    type = string
+    default = false
+}
