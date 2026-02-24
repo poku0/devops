@@ -7,7 +7,7 @@ terraform {
     encrypt        = true
   }
 }
-
+# above block stores terraform state in s3 bucket and dynamodb table for state locking 
 
 resource "aws_s3_bucket" "example" {}
 
