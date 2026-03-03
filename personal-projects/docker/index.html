@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Nginx Site – Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0f0f1a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #1a1a2e;
+            border-bottom: 1px solid #2d2d4a;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #818cf8;
+        }
+
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: #c084fc;
+        }
+
+        main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 57px);
+        }
+
+        .card {
+            text-align: center;
+            background: linear-gradient(135deg, #1e1e3a, #2a2a4a);
+            border: 1px solid #3a3a5c;
+            border-radius: 16px;
+            padding: 3rem 4rem;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #4ade80;
+            color: #052e16;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            padding: 0.25rem 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+        }
+
+        .meta {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <span class="logo">🐳 NginxSite</span>
+        <a href="index.html" class="active">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+    <main>
+        <div class="card">
+            <div class="badge">🚀 Running in Docker</div>
+            <h1>Welcome Home</h1>
+            <p>Served from a custom Docker image.<br />Built and pushed to Docker Hub via GitHub Actions.</p>
+            <div class="meta">
+                <span>🐳 nginx:alpine</span>
+                <span>⚙️ GitHub Actions</span>
+                <span>📦 Docker Hub</span>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
