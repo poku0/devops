@@ -1,0 +1,12 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: multicontainer-pod
+spec:
+  containers:
+  - name: c1
+    image: ubuntu
+    command: ["/bin/bash", "-c", "echo Hi from c1"]
+  - name: c2
+    image: ubuntu
+    command: ["/bin/bash", "-c", "echo Hi from c2"]
