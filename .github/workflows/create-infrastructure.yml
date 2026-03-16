@@ -43,23 +43,26 @@ jobs:
           # allowing the GitHub OIDC provider. See repo documentation.
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: eu-central-1
+          role-session-name: github-actions-session
 
       - name: Terraform Init
         run: terraform -chdir=terraform init
 
       - name: Terraform Plan
+        if: github.event_name == 'workflow_dispatch'
         run: terraform -chdir=terraform plan -var="db_username=${{ github.event.inputs.db_username }}" -var="db_password=${{ github.event.inputs.db_password }}" -out=plan.out
 
       - name: save plan
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v6
         with:
           name: terraform-plan
           path: terraform/plan.out
 
       - name: Terraform Apply
-        if: ${{ github.event.inputs.action == 'apply' }}
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
         run: terraform -chdir=terraform apply -auto-approve plan.out
 
       - name: Terraform destroy
-        if: ${{ github.event.inputs.action == 'destroy' }}
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
         run: terraform -chdir=terraform destroy -auto-approve -var="db_username=${{ github.event.inputs.db_username }}" -var="db_password=${{ github.event.inputs.db_password }}"
