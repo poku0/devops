@@ -1,0 +1,22 @@
+name: create infrastructure using terraform test 
+
+on:
+    push:
+        branches:
+        - main
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+jobs:
+  run_job_with_aws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@main # 
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-central-1
+      - name: Additional steps
+        run: |
+    
