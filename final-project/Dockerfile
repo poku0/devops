@@ -25,6 +25,7 @@ LABEL org.opencontainers.image.source="https://github.com/poku0/PasswordPusher"
 LABEL org.opencontainers.image.version="1.0.0"
 
 # Install build dependencies (single layer)
+# hadolint ignore=DL3018
 RUN apk update && apk add --no-cache \
     git \
     build-base \
@@ -77,11 +78,9 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
       echo "Skipping bootsnap precompilation for $(uname -m)" ; \
     fi
 
-# ── Precompile Rails assets ─────────────────────────────────────────────────
-RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
-
-# Clean up build artifacts
-RUN rm -rf tmp/cache tmp/pids tmp/sockets app/assets/images/features .git
+# ── Precompile Rails assets + clean up ───────────────────────────────────────
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile \
+    && rm -rf tmp/cache tmp/pids tmp/sockets app/assets/images/features .git
 
 # =============================================================================
 # Stage 2: Production runtime image
@@ -95,6 +94,7 @@ LABEL maintainer="Povilas <povilas@kulboka.com>"
 LABEL description="Customized Password Pusher — DevOps final project"
 
 # Install runtime packages (single layer)
+# hadolint ignore=DL3018
 RUN apk update && apk add --no-cache \
     bash \
     curl \
@@ -123,28 +123,23 @@ RUN addgroup -g "${GID}" pwpusher \
 # Copy application from build stage
 COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
 
-# Configure bundle for production
+# Configure bundle, create dirs, set up entrypoints, clean up (single layer)
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
-    && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
-
-# Ensure storage directory exists
-RUN mkdir -p ${APP_ROOT}/storage/db && chown -R pwpusher:pwpusher ${APP_ROOT}/storage
-
-# Set up entrypoints from the cloned source
-RUN chmod +x ${APP_ROOT}/containers/docker/entrypoint.sh \
-             ${APP_ROOT}/containers/docker/worker-entrypoint.sh \
+    && bundle config set deployment "${BUNDLE_DEPLOYMENT}" \
+    && mkdir -p ${APP_ROOT}/storage/db \
+    && chown -R pwpusher:pwpusher ${APP_ROOT}/storage \
+    && chmod +x ${APP_ROOT}/containers/docker/entrypoint.sh \
+                ${APP_ROOT}/containers/docker/worker-entrypoint.sh \
     && cp ${APP_ROOT}/containers/docker/entrypoint.sh /usr/local/bin/docker-entrypoint \
-    && cp ${APP_ROOT}/containers/docker/worker-entrypoint.sh /usr/local/bin/docker-worker-entrypoint
-
-# Clean up unnecessary files
-RUN rm -rf ${APP_ROOT}/.do \
-      ${APP_ROOT}/.github \
-      ${APP_ROOT}/app.json \
-      ${APP_ROOT}/bin/move_up_stable_tag.sh \
-      ${APP_ROOT}/test \
-      ${APP_ROOT}/ct.yaml
-
-RUN touch /opt/PasswordPusher/.env.production && chown pwpusher:pwpusher /opt/PasswordPusher/.env.production
+    && cp ${APP_ROOT}/containers/docker/worker-entrypoint.sh /usr/local/bin/docker-worker-entrypoint \
+    && rm -rf ${APP_ROOT}/.do \
+              ${APP_ROOT}/.github \
+              ${APP_ROOT}/app.json \
+              ${APP_ROOT}/bin/move_up_stable_tag.sh \
+              ${APP_ROOT}/test \
+              ${APP_ROOT}/ct.yaml \
+    && touch /opt/PasswordPusher/.env.production \
+    && chown pwpusher:pwpusher /opt/PasswordPusher/.env.production
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
