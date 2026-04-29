@@ -66,3 +66,100 @@ resource "aws_iam_instance_profile" "ec2_ssm" {
   name = "${var.project_name}-ec2-profile"
   role = aws_iam_role.ec2_ssm.name
 }
+
+# ──────────────────────────────────────────────
+# GitHub Actions OIDC — allows CI/CD to deploy via SSM
+# ──────────────────────────────────────────────
+
+# OIDC identity provider for GitHub Actions
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+
+  tags = {
+    Name = "github-actions-oidc"
+  }
+}
+
+# Trust policy — only the specified repo can assume this role
+data "aws_iam_policy_document" "github_actions_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${var.github_repo}:*"]
+    }
+  }
+}
+
+# IAM role for GitHub Actions
+resource "aws_iam_role" "github_actions" {
+  name               = "${var.project_name}-github-actions"
+  assume_role_policy = data.aws_iam_policy_document.github_actions_assume.json
+
+  tags = {
+    Name = "${var.project_name}-github-actions"
+  }
+}
+
+# Policy — SSM RunCommand permissions for deployment
+data "aws_iam_policy_document" "github_actions_deploy" {
+  # Allow sending commands to the EC2 instance
+  statement {
+    sid    = "SSMSendCommand"
+    effect = "Allow"
+    actions = [
+      "ssm:SendCommand"
+    ]
+    resources = [
+      "arn:aws:ssm:${var.aws_region}::document/AWS-RunShellScript",
+      aws_instance.app.arn
+    ]
+  }
+
+  # Allow checking command execution status
+  statement {
+    sid    = "SSMCommandStatus"
+    effect = "Allow"
+    actions = [
+      "ssm:GetCommandInvocation",
+      "ssm:ListCommandInvocations"
+    ]
+    resources = ["*"]
+  }
+
+  # Allow waiting for command completion (ssm:DescribeInstanceInformation)
+  statement {
+    sid    = "SSMDescribe"
+    effect = "Allow"
+    actions = [
+      "ssm:DescribeInstanceInformation"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "github_actions_deploy" {
+  name        = "${var.project_name}-github-actions-deploy"
+  description = "Allow GitHub Actions to deploy via SSM RunCommand"
+  policy      = data.aws_iam_policy_document.github_actions_deploy.json
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_deploy" {
+  role       = aws_iam_role.github_actions.name
+  policy_arn = aws_iam_policy.github_actions_deploy.arn
+}

@@ -41,3 +41,8 @@ output "ssm_connect_command" {
   description = "Command to connect to EC2 via SSM Session Manager"
   value       = "aws ssm start-session --target ${aws_instance.app.id} --region ${var.aws_region}"
 }
+
+output "github_actions_role_arn" {
+  description = "IAM Role ARN for GitHub Actions OIDC — set as AWS_ROLE_ARN secret in GitHub"
+  value       = aws_iam_role.github_actions.arn
+}

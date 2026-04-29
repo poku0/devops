@@ -121,6 +121,7 @@ terraform apply
 
 After apply, note the outputs:
 - `ec2_instance_id` → Add as `EC2_INSTANCE_ID` GitHub secret
+- `github_actions_role_arn` → Add as `AWS_ROLE_ARN` GitHub secret
 - `alb_dns_name` → Cloudflare CNAME is created automatically
 - `ssm_connect_command` → Use to connect to EC2
 
@@ -151,7 +152,7 @@ Lint → Build → Trivy Scan → Push to Docker Hub → Deploy via SSM → Heal
 |-------|------|---------|
 | Lint | Hadolint + yamllint | Dockerfile and YAML validation |
 | Build | Docker Buildx | Build custom pwpush image |
-| Scan | Trivy | Vulnerability scan — fails on HIGH/CRITICAL |
+| Scan | Trivy | Vulnerability scan — informational (does not block pipeline) |
 | Push | Docker Hub | Push with `:latest` and `:sha` tags |
 | Deploy | AWS SSM RunCommand | Pull and restart on EC2 — no SSH needed |
 | Test | pytest + curl | Verify application is live and healthy |
