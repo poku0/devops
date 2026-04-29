@@ -31,7 +31,7 @@ resource "cloudflare_record" "app" {
   name    = var.app_domain
   content = aws_lb.main.dns_name
   type    = "CNAME"
-  ttl     = 1 # Auto TTL when proxied
+  ttl     = 1    # Auto TTL when proxied
   proxied = true # Orange cloud — Cloudflare proxy enabled
 
   comment = "Password Pusher application - proxied via Cloudflare"
@@ -46,7 +46,7 @@ resource "cloudflare_record" "grafana" {
   name    = var.grafana_domain
   content = aws_lb.main.dns_name
   type    = "CNAME"
-  ttl     = 1 # Auto TTL when proxied
+  ttl     = 1    # Auto TTL when proxied
   proxied = true # Orange cloud — Cloudflare proxy enabled
 
   comment = "Grafana monitoring dashboard - proxied via Cloudflare"

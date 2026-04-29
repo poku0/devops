@@ -61,6 +61,42 @@ resource "aws_iam_role_policy_attachment" "ssm_params" {
   policy_arn = aws_iam_policy.ssm_params.arn
 }
 
+# Custom policy for S3 config bucket read access
+data "aws_iam_policy_document" "s3_config_read" {
+  statement {
+    sid    = "ListConfigBucket"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket"
+    ]
+    resources = [
+      aws_s3_bucket.config.arn
+    ]
+  }
+
+  statement {
+    sid    = "ReadConfigObjects"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = [
+      "${aws_s3_bucket.config.arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "s3_config_read" {
+  name        = "${var.project_name}-s3-config-read"
+  description = "Allow EC2 to read config files from S3 bucket"
+  policy      = data.aws_iam_policy_document.s3_config_read.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_config_read" {
+  role       = aws_iam_role.ec2_ssm.name
+  policy_arn = aws_iam_policy.s3_config_read.arn
+}
+
 # Instance profile — attaches the role to EC2
 resource "aws_iam_instance_profile" "ec2_ssm" {
   name = "${var.project_name}-ec2-profile"

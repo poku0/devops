@@ -39,14 +39,10 @@ resource "aws_instance" "app" {
   }
 
   user_data = base64encode(templatefile("${path.module}/templates/user-data.sh", {
-    project_name       = var.project_name
-    aws_region         = var.aws_region
-    docker_image       = var.docker_image
-    db_password        = var.db_password
-    secret_key_base    = var.secret_key_base
-    grafana_password   = var.grafana_admin_password
-    app_domain         = var.app_domain
-    grafana_domain     = var.grafana_domain
+    project_name   = var.project_name
+    aws_region     = var.aws_region
+    config_bucket  = aws_s3_bucket.config.id
+    grafana_domain = var.grafana_domain
   }))
 
   metadata_options {
