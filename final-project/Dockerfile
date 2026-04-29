@@ -1,6 +1,6 @@
 # Custom Password Pusher image with branding modifications
 # Based on the official pwpush image
-FROM docker.io/pglombardo/pwpush:latest
+FROM docker.io/pglombardo/pwpush:2.6.1
 
 # Metadata
 LABEL maintainer="Povilas <povilas@kulboka.com>"

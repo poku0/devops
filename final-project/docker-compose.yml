@@ -3,7 +3,7 @@ services:
   # Password Pusher — Ruby on Rails application
   # ──────────────────────────────────────────────
   pwpush:
-    image: ${DOCKER_IMAGE:-pglombardo/pwpush:latest}
+    image: ${DOCKER_IMAGE:-pglombardo/pwpush:2.6.1}
     container_name: pwpush
     restart: unless-stopped
     ports:
