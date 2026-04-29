@@ -34,7 +34,7 @@ resource "cloudflare_record" "app" {
   ttl     = 1 # Auto TTL when proxied
   proxied = true # Orange cloud — Cloudflare proxy enabled
 
-  comment = "Password Pusher application — proxied via Cloudflare"
+  comment = "Password Pusher application - proxied via Cloudflare"
 }
 
 # ──────────────────────────────────────────────
@@ -49,5 +49,5 @@ resource "cloudflare_record" "grafana" {
   ttl     = 1 # Auto TTL when proxied
   proxied = true # Orange cloud — Cloudflare proxy enabled
 
-  comment = "Grafana monitoring dashboard — proxied via Cloudflare"
+  comment = "Grafana monitoring dashboard - proxied via Cloudflare"
 }

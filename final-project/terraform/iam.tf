@@ -71,15 +71,9 @@ resource "aws_iam_instance_profile" "ec2_ssm" {
 # GitHub Actions OIDC — allows CI/CD to deploy via SSM
 # ──────────────────────────────────────────────
 
-# OIDC identity provider for GitHub Actions
-resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
-
-  tags = {
-    Name = "github-actions-oidc"
-  }
+# Reference the existing OIDC provider (created outside Terraform)
+data "aws_iam_openid_connect_provider" "github" {
+  url = "https://token.actions.githubusercontent.com"
 }
 
 # Trust policy — only the specified repo can assume this role
@@ -89,7 +83,7 @@ data "aws_iam_policy_document" "github_actions_assume" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {

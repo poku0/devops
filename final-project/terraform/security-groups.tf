@@ -43,7 +43,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_security_group" "ec2" {
   name        = "${var.project_name}-ec2-sg"
-  description = "Allow traffic from ALB only — no SSH"
+  description = "Allow traffic from ALB only - no SSH"
   vpc_id      = aws_vpc.main.id
 
   # pwpush app port — from ALB only
