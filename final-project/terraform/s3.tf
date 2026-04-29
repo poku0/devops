@@ -80,6 +80,22 @@ resource "aws_s3_object" "grafana_dashboard_json" {
   etag   = filemd5("${path.module}/../monitoring/grafana/provisioning/dashboards/docker-monitoring.json")
 }
 
+resource "aws_s3_object" "branding_logo" {
+  bucket       = aws_s3_bucket.config.id
+  key          = "branding/logo.png"
+  source       = "${path.module}/../branding/logo.png"
+  etag         = filemd5("${path.module}/../branding/logo.png")
+  content_type = "image/png"
+}
+
+resource "aws_s3_object" "branding_favicon" {
+  bucket       = aws_s3_bucket.config.id
+  key          = "branding/favicon.ico"
+  source       = "${path.module}/../branding/favicon.ico"
+  etag         = filemd5("${path.module}/../branding/favicon.ico")
+  content_type = "image/x-icon"
+}
+
 # ──────────────────────────────────────────────
 # S3 VPC Gateway Endpoint — free, allows EC2 in
 # private subnet to reach S3 without NAT Gateway

@@ -48,6 +48,7 @@ mkdir -p "$APP_DIR"
 mkdir -p "$APP_DIR/monitoring/prometheus"
 mkdir -p "$APP_DIR/monitoring/grafana/provisioning/datasources"
 mkdir -p "$APP_DIR/monitoring/grafana/provisioning/dashboards"
+mkdir -p "$APP_DIR/branding"
 cd "$APP_DIR"
 
 # ── Download config files from S3 ──
@@ -57,6 +58,8 @@ aws s3 cp "s3://${config_bucket}/monitoring/prometheus/prometheus.yml" "$APP_DIR
 aws s3 cp "s3://${config_bucket}/monitoring/grafana/provisioning/datasources/prometheus.yml" "$APP_DIR/monitoring/grafana/provisioning/datasources/prometheus.yml" --region "${aws_region}"
 aws s3 cp "s3://${config_bucket}/monitoring/grafana/provisioning/dashboards/dashboard.yml" "$APP_DIR/monitoring/grafana/provisioning/dashboards/dashboard.yml" --region "${aws_region}"
 aws s3 cp "s3://${config_bucket}/monitoring/grafana/provisioning/dashboards/docker-monitoring.json" "$APP_DIR/monitoring/grafana/provisioning/dashboards/docker-monitoring.json" --region "${aws_region}"
+aws s3 cp "s3://${config_bucket}/branding/logo.png" "$APP_DIR/branding/logo.png" --region "${aws_region}"
+aws s3 cp "s3://${config_bucket}/branding/favicon.ico" "$APP_DIR/branding/favicon.ico" --region "${aws_region}"
 echo "=== Config files downloaded successfully ==="
 
 # ── Fetch secrets from SSM Parameter Store ──

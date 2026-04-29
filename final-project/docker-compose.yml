@@ -9,6 +9,11 @@ services:
     restart: unless-stopped
     ports:
       - "5100:5100"
+    volumes:
+      - ./branding/logo.png:/opt/PasswordPusher/public/assets/logo-transparent-sm-dark-bare-46875475.png:ro
+      - ./branding/logo.png:/opt/PasswordPusher/public/assets/favicon-32x32-2f0ee840.png:ro
+      - ./branding/logo.png:/opt/PasswordPusher/public/assets/favicon-96x96-87726a91.png:ro
+      - ./branding/logo.png:/opt/PasswordPusher/public/assets/favicon-16x16-b03bc133.png:ro
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
