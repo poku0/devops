@@ -1,0 +1,44 @@
+/*
+ * Custom Password Pusher Theme
+ * This file overrides default pwpush styles for branding.
+ * Modify colors, fonts, and layout to match your organization.
+ */
+
+:root {
+  --brand-primary: #2563eb;
+  --brand-secondary: #1e40af;
+  --brand-accent: #3b82f6;
+  --brand-bg: #f8fafc;
+  --brand-text: #1e293b;
+}
+
+/* Navbar branding */
+.navbar {
+  background-color: var(--brand-primary) !important;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Footer customization */
+footer {
+  background-color: var(--brand-secondary) !important;
+  color: #fff;
+}
+
+footer a {
+  color: var(--brand-accent) !important;
+}
+
+/* Button styling */
+.btn-primary {
+  background-color: var(--brand-primary) !important;
+  border-color: var(--brand-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-secondary) !important;
+  border-color: var(--brand-secondary) !important;
+}

@@ -1,0 +1,6 @@
+# Place your custom branding assets here:
+# - logo.png (application logo)
+# - favicon.ico (browser tab icon)
+#
+# These files are copied into the Docker image during build.
+# See Dockerfile for the exact paths they are mapped to.

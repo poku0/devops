@@ -1,0 +1,189 @@
+services:
+  # ──────────────────────────────────────────────
+  # Password Pusher — Ruby on Rails application
+  # ──────────────────────────────────────────────
+  pwpush:
+    image: ${DOCKER_IMAGE:-poku0/pwpush:latest}
+    container_name: pwpush
+    restart: unless-stopped
+    ports:
+      - "5100:5100"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - PWP__HOST=${APP_DOMAIN:-localhost}
+      - PWP__BRAND__TITLE=${BRAND_TITLE:-Secure Password Pusher}
+      - PWP__BRAND__TAGLINE=${BRAND_TAGLINE:-Share passwords securely}
+      - FORCE_SSL=${FORCE_SSL:-false}
+      - RAILS_ENV=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5100/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────
+  # PostgreSQL 16 — Application database
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: pwpush-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-pwpush}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-pwpush_production}
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pwpush} -d ${POSTGRES_DB:-pwpush_production}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────
+  # Prometheus — Metrics collection
+  # ──────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+    networks:
+      - frontend
+      - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────
+  # Grafana — Metrics visualization & dashboards
+  # ──────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://${GRAFANA_DOMAIN:-grafana.kulboka.com}
+      - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN:-grafana.kulboka.com}
+    depends_on:
+      - prometheus
+    networks:
+      - frontend
+      - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────
+  # cAdvisor — Container metrics exporter
+  # ──────────────────────────────────────────────
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────
+  # Node Exporter — Host system metrics
+  # ──────────────────────────────────────────────
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ──────────────────────────────────────────────
+# Docker Networks — Isolation & segmentation
+# ──────────────────────────────────────────────
+networks:
+  frontend:
+    name: pwpush-frontend
+    driver: bridge
+  backend:
+    name: pwpush-backend
+    driver: bridge
+    internal: true  # No external access — DB is fully isolated
+  monitoring:
+    name: pwpush-monitoring
+    driver: bridge
+
+# ──────────────────────────────────────────────
+# Persistent Volumes
+# ──────────────────────────────────────────────
+volumes:
+  postgres_data:
+    name: pwpush-postgres-data
+  prometheus_data:
+    name: pwpush-prometheus-data
+  grafana_data:
+    name: pwpush-grafana-data

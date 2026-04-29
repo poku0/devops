@@ -1,0 +1,32 @@
+# ============================================
+# Terraform Variables — Example Values
+# ============================================
+# Copy this file to terraform.tfvars and fill in real values.
+# NEVER commit terraform.tfvars to version control.
+# ============================================
+
+# AWS
+aws_region    = "eu-central-1"
+project_name  = "pwpush"
+instance_type = "t3.small"
+volume_size   = 30
+
+# Networking
+vpc_cidr             = "10.0.0.0/16"
+public_subnet_cidr   = "10.0.1.0/24"
+public_subnet_cidr_b = "10.0.3.0/24"
+private_subnet_cidr  = "10.0.2.0/24"
+
+# Application
+app_domain     = "pwpush.kulboka.com"
+grafana_domain = "grafana.kulboka.com"
+docker_image   = "YOUR_DOCKERHUB_USERNAME/pwpush:latest"
+
+# Secrets — use environment variables or -var flags instead of hardcoding
+# db_password            = "..."
+# secret_key_base        = "..."
+# grafana_admin_password = "..."
+
+# Cloudflare
+# cloudflare_api_token = "..."
+cloudflare_zone_id = "YOUR_CLOUDFLARE_ZONE_ID"
