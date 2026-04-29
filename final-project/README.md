@@ -68,8 +68,9 @@ final-project/
 ├── tests/
 │   ├── test_health.py                 # pytest health checks
 │   └── requirements.txt              # Python test dependencies
-└── .github/workflows/
-    └── deploy-pwpush.yml              # CI/CD pipeline
+│
+# CI/CD workflow lives at repo root (required by GitHub Actions):
+# .github/workflows/deploy-pwpush.yml
 ```
 
 ## Prerequisites
