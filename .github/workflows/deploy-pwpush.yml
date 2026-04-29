@@ -89,9 +89,6 @@ jobs:
           context: ${{ env.WORKING_DIR }}
           load: true
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: |
-            FORK_REPO=https://github.com/poku0/PasswordPusher.git
-            FORK_BRANCH=master
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -119,9 +116,6 @@ jobs:
           context: ${{ env.WORKING_DIR }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: |
-            FORK_REPO=https://github.com/poku0/PasswordPusher.git
-            FORK_BRANCH=master
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

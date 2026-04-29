@@ -1,6 +1,6 @@
 # Password Pusher — DevOps Final Project
 
-A self-hosted, customized deployment of [Password Pusher (pwpush)](https://github.com/poku0/PasswordPusher) (forked from [upstream](https://github.com/pglombardo/PasswordPusher)) on AWS, built from source with custom branding. Demonstrates DevOps best practices including Infrastructure as Code, CI/CD automation, security hardening, and full observability.
+A self-hosted, customized deployment of [Password Pusher (pwpush)](https://github.com/pglombardo/PasswordPusher) on AWS, demonstrating DevOps best practices including Infrastructure as Code, CI/CD automation, security hardening, and full observability.
 
 ## Architecture
 
@@ -36,7 +36,7 @@ final-project/
 ├── .env.example                       # Environment variable template
 ├── .gitignore                         # Git ignore rules
 ├── docker-compose.yml                 # Multi-container orchestration
-├── Dockerfile                         # Multi-stage build from fork
+├── Dockerfile                         # Custom pwpush image with branding
 ├── branding/                          # Custom logo, favicon
 ├── config/
 │   └── custom_theme.css               # UI customization
@@ -92,45 +92,12 @@ final-project/
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token (Zone:DNS:Edit) |
 | `CLOUDFLARE_ZONE_ID` | Cloudflare zone ID for kulboka.com |
 
-## Docker Build Strategy
-
-The [`Dockerfile`](Dockerfile) uses a **multi-stage build from the forked source**:
-
-1. **Stage 1 (build-env):** Clones `poku0/PasswordPusher` fork, copies custom branding/CSS into the source tree, installs Ruby + Node dependencies, and precompiles Rails assets
-2. **Stage 2 (runtime):** Minimal Alpine image with only runtime dependencies — copies compiled app from stage 1
-
-```
-┌─────────────────────────────────────────────────┐
-│  Build Stage (ruby:4.0.3-alpine)                │
-│  git clone poku0/PasswordPusher                 │
-│  COPY branding/ → app/assets/images/            │
-│  COPY config/custom_theme.css → stylesheets/    │
-│  bundle install + yarn install                  │
-│  rails assets:precompile                        │
-├─────────────────────────────────────────────────┤
-│  Runtime Stage (ruby:4.0.2-alpine)              │
-│  COPY --from=build-env (compiled app)           │
-│  HEALTHCHECK + non-root user                    │
-│  ENTRYPOINT → foreman (web + worker)            │
-└─────────────────────────────────────────────────┘
-```
-
-Build args allow overriding the fork repo/branch:
-
-```bash
-docker build \
-  --build-arg FORK_REPO=https://github.com/poku0/PasswordPusher.git \
-  --build-arg FORK_BRANCH=master \
-  -t pwpush-custom .
-```
-
 ## Quick Start
 
-### 1. Fork Password Pusher
+### 1. Add Custom Branding (Optional)
 
 ```bash
-# Fork https://github.com/pglombardo/PasswordPusher to poku0/PasswordPusher
-# Add your branding assets to this repo:
+# Add your branding assets to customize the pwpush UI:
 cp your-logo.png final-project/branding/logo.png
 cp your-favicon.ico final-project/branding/favicon.ico
 ```
