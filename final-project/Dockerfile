@@ -7,14 +7,13 @@ LABEL maintainer="Povilas <povilas@kulboka.com>"
 LABEL description="Customized Password Pusher for DevOps final project"
 LABEL version="1.0.0"
 
-# Copy custom branding assets (logo, favicon, etc.)
+# Copy custom branding assets (logo, favicon)
 # These override the default pwpush branding
-# hadolint ignore=DL3059
-COPY branding/logo.pn[g] /opt/PasswordPusher/app/assets/images/logo.png
-COPY branding/favicon.ic[o] /opt/PasswordPusher/public/favicon.ico
+COPY branding/logo.png /opt/PasswordPusher/app/assets/images/logo.png
+COPY branding/favicon.ico /opt/PasswordPusher/public/favicon.ico
 
-# Copy custom configuration overrides
-COPY config/custom_theme.cs[s] /opt/PasswordPusher/app/assets/stylesheets/custom_theme.css
+# Copy custom CSS theme overrides
+COPY config/custom_theme.css /opt/PasswordPusher/app/assets/stylesheets/custom_theme.css
 
 # The base image already sets the entrypoint and CMD
 # Environment variables are injected via docker-compose .env file
