@@ -151,6 +151,16 @@ data "aws_iam_policy_document" "github_actions_deploy" {
     ]
     resources = ["*"]
   }
+
+  # Allow discovering EC2 instance ID by tag (no hardcoded instance ID)
+  statement {
+    sid    = "EC2Discover"
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeInstances"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "github_actions_deploy" {

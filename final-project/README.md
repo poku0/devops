@@ -84,13 +84,14 @@ final-project/
 |--------|-------------|
 | `DOCKER_USERNAME` | Docker Hub username |
 | `DOCKER_PASSWORD` | Docker Hub access token |
-| `AWS_ROLE_ARN` | IAM role ARN for GitHub OIDC |
-| `EC2_INSTANCE_ID` | EC2 instance ID (from Terraform output) |
+| `AWS_ROLE_ARN` | IAM role ARN for GitHub OIDC (from `terraform output github_actions_role_arn`) |
 | `APP_DOMAIN` | Application domain (e.g., `pwpush.kulboka.com`) |
 | `DB_PASSWORD` | PostgreSQL password |
 | `PWPUSH_SECRET_KEY_BASE` | Rails secret key |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token (Zone:DNS:Edit) |
 | `CLOUDFLARE_ZONE_ID` | Cloudflare zone ID for kulboka.com |
+
+> **Note:** The EC2 instance ID is discovered automatically by tag (`pwpush-app-server`) — no secret needed.
 
 ## Quick Start
 

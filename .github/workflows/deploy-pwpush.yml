@@ -139,9 +139,28 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-session-name: github-actions-deploy
 
+      - name: Discover EC2 instance ID by tag
+        id: ec2
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters \
+              "Name=tag:Name,Values=pwpush-app-server" \
+              "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].InstanceId" \
+            --output text \
+            --region "${{ env.AWS_REGION }}")
+
+          if [ "$INSTANCE_ID" = "None" ] || [ -z "$INSTANCE_ID" ]; then
+            echo "❌ No running EC2 instance found with tag 'pwpush-app-server'"
+            exit 1
+          fi
+
+          echo "✅ Found instance: $INSTANCE_ID"
+          echo "instance_id=$INSTANCE_ID" >> "$GITHUB_OUTPUT"
+
       - name: Copy project files to EC2 via SSM
         run: |
-          INSTANCE_ID="${{ secrets.EC2_INSTANCE_ID }}"
+          INSTANCE_ID="${{ steps.ec2.outputs.instance_id }}"
 
           # Create a tarball of the deployment files
           tar -czf /tmp/deploy-bundle.tar.gz \
@@ -171,7 +190,7 @@ jobs:
 
       - name: Deploy application via SSM RunCommand
         run: |
-          INSTANCE_ID="${{ secrets.EC2_INSTANCE_ID }}"
+          INSTANCE_ID="${{ steps.ec2.outputs.instance_id }}"
           IMAGE_TAG="${{ env.DOCKER_IMAGE }}:${{ github.sha }}"
 
           COMMAND_ID=$(aws ssm send-command \
