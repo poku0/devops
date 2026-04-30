@@ -196,20 +196,3 @@ Grafana is publicly accessible at **https://grafana.kulboka.com** via ALB host-b
 | Data transfer | ~$5 |
 | **Total** | **~$92/mo** |
 
-> **Cost optimization tip:** For development/demo, you can stop the EC2 instance when not in use. The NAT Gateway and VPC endpoints continue to incur charges while the VPC exists.
-
-## Grading Rubric Coverage
-
-| Criteria | Implementation |
-|----------|---------------|
-| Develop/Adapt App | ✅ Forked pwpush with custom branding |
-| Dockerize | ✅ Custom Dockerfile + multi-container compose |
-| IaC (Terraform) | ✅ Full AWS infra + Cloudflare DNS |
-| CI/CD Pipeline | ✅ GitHub Actions: lint → build → scan → push → deploy → test |
-| Security Scanning | ✅ Trivy in pipeline, fails on HIGH/CRITICAL |
-| Secret Management | ✅ GitHub Secrets → SSM Parameter Store |
-| Cloud Security Groups | ✅ ALB: 443 only; EC2: from ALB only; no SSH |
-| Private Docker Network | ✅ PostgreSQL on internal network |
-| Monitoring & Logging | ✅ Prometheus + Grafana + cAdvisor + Node Exporter |
-| Automated Testing | ✅ pytest health checks + curl verification |
-| Documentation | ✅ This README + architecture diagrams |
