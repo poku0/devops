@@ -246,25 +246,32 @@ jobs:
         run: pip install -r final-project/tests/requirements.txt
 
       - name: Wait for deployment to stabilize
-        run: sleep 30
+        run: sleep 60
+
+      - name: Precheck application reachability
+        run: |
+          echo "=== DNS check ==="
+          getent hosts "${{ secrets.APP_DOMAIN }}" || true
+
+          echo "=== Fast curl precheck ==="
+          for i in 1 2 3 4 5 6; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              --max-time 15 \
+              "https://${{ secrets.APP_DOMAIN }}" || echo "000")
+            echo "Attempt $i: HTTP Status $HTTP_STATUS"
+            if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "301" ] || [ "$HTTP_STATUS" = "302" ]; then
+              echo "✅ Application reachable"
+              exit 0
+            fi
+            sleep 10
+          done
+
+          echo "❌ Application not reachable before pytest"
+          exit 1
 
       - name: Run health check tests
         env:
           APP_URL: https://${{ secrets.APP_DOMAIN }}
-          HEALTH_CHECK_RETRIES: "12"
-          HEALTH_CHECK_DELAY: "10"
+          HEALTH_CHECK_RETRIES: "3"
+          HEALTH_CHECK_DELAY: "5"
         run: pytest final-project/tests/test_health.py -v --tb=short
-
-      - name: Curl health check (backup)
-        run: |
-          echo "=== Direct curl health check ==="
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 30 \
-            "https://${{ secrets.APP_DOMAIN }}" || echo "000")
-          echo "HTTP Status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "301" ] || [ "$HTTP_STATUS" = "302" ]; then
-            echo "✅ Application is healthy"
-          else
-            echo "❌ Application health check failed"
-            exit 1
-          fi
